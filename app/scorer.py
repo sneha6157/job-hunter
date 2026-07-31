@@ -46,6 +46,32 @@ def score_job(job: dict, config: dict) -> dict:
             score += pts
             break
 
+    # ── Company reputation ────────────────────────────────────────────────────
+    # Reward named, verifiable employers; penalise placeholder / ghost listings.
+    company = job.get("company", "").lower().strip()
+    source  = job.get("source",  "").lower().strip()
+
+    for name, pts in config.get("score_company", {}).items():
+        if name in company:
+            score += pts
+            flags.append("known_company")
+            break
+
+    ghost_penalty = config.get("ghost_penalty", -6)
+    is_ghost = False
+    for pat in config.get("ghost_patterns", []):
+        if pat in company:
+            is_ghost = True
+            break
+    # Company name that just echoes the job board itself = placeholder listing
+    if company and source and (company == source
+                               or company == f"client of {source}"
+                               or company == f"a client of {source}"):
+        is_ghost = True
+    if is_ghost:
+        score += ghost_penalty
+        flags.append("ghost")
+
     full = f"{title} {body} {loc}"
     for flag in config.get("bond_flags", []):
         if flag in full:

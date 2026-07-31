@@ -145,6 +145,37 @@ def build_default_config(profile: dict) -> dict:
         "days_back":      30,
         "score_threshold": 3,
         **scoring,
+        # ── Company reputation ────────────────────────────────────────────────
+        # +points when the employer is a known, verifiable company. Substring
+        # match on the company name, lowercase. Tune freely in the Config tab.
+        "score_company": {
+            # Global product / banking / consulting majors
+            "jpmorgan": 5, "jp morgan": 5, "j.p. morgan": 5, "morgan stanley": 5,
+            "goldman": 5, "wells fargo": 5, "bank of america": 5, "citi": 5,
+            "bnp paribas": 5, "barclays": 5, "hsbc": 5, "standard chartered": 5,
+            "natwest": 5, "deutsche": 5, "state street": 5, "fidelity": 5,
+            "blackrock": 5, "amazon": 5, "apple": 5, "microsoft": 5, "google": 5,
+            "meta": 5, "nvidia": 5, "adobe": 5, "salesforce": 5, "oracle": 5,
+            "vmware": 5, "ibm": 4, "cisco": 4, "qualcomm": 4, "paypal": 4,
+            "servicenow": 4, "notion": 4, "electronic arts": 4, "honeywell": 4,
+            "ss&c": 4, "franklin templeton": 5, "thomson reuters": 4, "sap": 4,
+            "gap inc": 4, "hitachi": 4, "optum": 4, "unitedhealth": 4, "ea": 3,
+            # India IT services / GCC majors
+            "infosys": 4, "tcs": 4, "tata consultancy": 4, "wipro": 4,
+            "cognizant": 4, "accenture": 4, "capgemini": 4, "tech mahindra": 4,
+            "hcl": 4, "ltimindtree": 4, "mindtree": 3, "mphasis": 3,
+            "persistent": 3, "dxc": 3, "value labs": 3, "valuelabs": 3,
+            "deloitte": 4, "kpmg": 4, "pwc": 4, "ernst": 4, "ey ": 4,
+        },
+        # Listings whose "company" is a placeholder, staffing echo, or the job
+        # board itself. Heavy penalty + 'ghost' flag so they sink to the bottom.
+        "ghost_patterns": [
+            "client of", "a client of", "confidential", "hiring for",
+            "talent solution", "talent acquisition", "consultancy hiring",
+            "staffing", "manpower", "placements", "recruiter", "hr solutions",
+            "undisclosed", "stealth", "testhiring", "test hiring",
+        ],
+        "ghost_penalty": -6,
         "hard_reject_roles": [
             "internship", "intern ", "trainee intern", "apprentice",
             "early career program", "graduate program", "training program",
